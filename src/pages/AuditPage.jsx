@@ -8,6 +8,7 @@ const AuditPage = () => {
   const [step, setStep] = useState('upload'); // upload, parsing, mapping, warning
   const [parsingLogs, setParsingLogs] = useState([]);
   const [parsedData, setParsedData] = useState(null);
+  const [mappingOverrides, setMappingOverrides] = useState({});
   const [normalizationResult, setNormalizationResult] = useState(null);
   const [fileName, setFileName] = useState('');
   const navigate = useNavigate();
@@ -594,15 +595,59 @@ const AuditPage = () => {
                           <div>
                             {mapping.target ? (
                               <>
-                                <div className="font-mono text-xs">{mapping.target}</div>
+                                <div className="font-mono text-xs">
+                                  {mapping.target}
+                                </div>
+
                                 <div className="font-sans text-[9px] uppercase tracking-widest text-black/40 mt-1">
                                   Canonical field
                                 </div>
                               </>
+                            ) : mapping.candidates?.length > 0 ? (
+
+                              <div>
+                                <select
+                                  value={
+                                    mappingOverrides[mapping.source] || ""
+                                  }
+                                  onChange={(e) => {
+                                    setMappingOverrides(prev => ({
+                                      ...prev,
+                                      [mapping.source]: e.target.value
+                                    }));
+                                  }}
+                                  className="border border-black bg-transparent px-2 py-2 font-mono text-xs w-full"
+                                >
+
+                                  <option value="">
+                                    Select canonical field
+                                  </option>
+
+                                  {mapping.candidates.map(candidate => (
+
+                                    <option
+                                      key={candidate.field}
+                                      value={candidate.field}
+                                    >
+                                      {candidate.label}
+                                    </option>
+
+                                  ))}
+
+                                </select>
+
+                                <div className="font-sans text-[9px] uppercase tracking-widest text-[#9A6B00] mt-1">
+                                  Review required
+                                </div>
+
+                              </div>
+
                             ) : (
+
                               <div className="font-mono text-xs text-black/50">
                                 No confident match
                               </div>
+
                             )}
                           </div>
 
